@@ -5,6 +5,7 @@ import { ArrowUpRight, ArrowRight, Menu, X, ChevronDown, Check, Zap, ShieldCheck
 const OrbitalScene = React.lazy(() => import('./OrbitalScene'))
 const ModuleScene = React.lazy(() => import('./ModuleScenes'))
 import ModuleWorkspace from './ModuleWorkspace'
+import IndustryWorkspace from './IndustryWorkspace'
 function ClientModuleScene({index,paused}){const ref=React.useRef(null);const inView=useInView(ref,{margin:'120px'});const [mounted,setMounted]=useState(false);React.useEffect(()=>setMounted(true),[]);return <div ref={ref} className="mf-scene" aria-hidden="true">{mounted&&<React.Suspense fallback={null}><ModuleScene index={index} paused={paused||!inView} sparkles={false} distance={5.8} className="mf-canvas"/></React.Suspense>}</div>}
 function ClientOrbitalScene(){const [mounted,setMounted]=useState(false);React.useEffect(()=>setMounted(true),[]);if(!mounted)return <div className="orbital-canvas"/>;return <React.Suspense fallback={<div className="orbital-canvas"/>}><OrbitalScene/></React.Suspense>}
 
@@ -151,10 +152,10 @@ function Modules(){
 }
 const tagParent=(d)=>({hidden:{},show:{transition:{staggerChildren:.08,delayChildren:.45+d}}})
 const tagChild={hidden:{opacity:0,y:10,scale:.9},show:{opacity:1,y:0,scale:1,transition:{duration:.5,ease}}}
-function IndustryCard({x,i}){
+function IndustryCard({x,i,onOpen}){
  const I=x.icon
  const onMove=e=>{const r=e.currentTarget.getBoundingClientRect();e.currentTarget.style.setProperty('--mx',`${e.clientX-r.left}px`);e.currentTarget.style.setProperty('--my',`${e.clientY-r.top}px`)}
- return <Reveal delay={i*.12}><TiltCard max={9}><a className={`industry-card ind-${x.theme}`} href="#contact" onPointerMove={onMove}>
+ return <Reveal delay={i*.12}><TiltCard max={9}><a className={`industry-card ind-${x.theme}`} href="#industries" onClick={e=>{e.preventDefault();onOpen(x.theme)}} onPointerMove={onMove}>
   <span className="industry-border" aria-hidden="true"/>
   <span className="industry-spot" aria-hidden="true"/>
   <span className="industry-num" aria-hidden="true">{x.number}</span>
@@ -166,7 +167,9 @@ function IndustryCard({x,i}){
  </a></TiltCard></Reveal>
 }
 function Industries(){
- return <section className="section industries-section" id="industries"><div className="ind-backdrop" aria-hidden="true"><span className="ind-blob ind-blob-a"/><span className="ind-blob ind-blob-b"/><span className="ind-blob ind-blob-c"/><span className="ind-gridlines"/></div><ScrollStage className="container"><div className="industry-head"><SectionHeading eyebrow="BUILT FOR YOUR WORLD" title={<>Flexible by design.<br/><span className="gradient-text">Ready for your industry.</span></>} copy="Different industries. Different challenges. One connected platform that adapts to the way your organisation works."/><a href="#contact" className="text-link">Find your solution <ArrowRight size={16}/></a></div><div className="industry-grid">{industries.map((x,i)=><IndustryCard key={x.name} x={x} i={i}/>)}</div></ScrollStage></section>
+ const [open,setOpen]=useState(null)
+ const close=React.useCallback(()=>setOpen(null),[])
+ return <section className="section industries-section" id="industries"><div className="ind-backdrop" aria-hidden="true"><span className="ind-blob ind-blob-a"/><span className="ind-blob ind-blob-b"/><span className="ind-blob ind-blob-c"/><span className="ind-gridlines"/></div><ScrollStage className="container"><div className="industry-head"><SectionHeading eyebrow="BUILT FOR YOUR WORLD" title={<>Flexible by design.<br/><span className="gradient-text">Ready for your industry.</span></>} copy="Different industries. Different challenges. One connected platform that adapts to the way your organisation works."/><a href="#contact" className="text-link">Find your solution <ArrowRight size={16}/></a></div><div className="industry-grid">{industries.map((x,i)=><IndustryCard key={x.name} x={x} i={i} onOpen={setOpen}/>)}</div></ScrollStage><AnimatePresence>{open&&<IndustryWorkspace kind={open} onSelect={setOpen} onClose={close}/>}</AnimatePresence></section>
 }
 function Why(){
  const items=[['One connected source','Reduce silos with shared data across teams and departments.',Layers3],['Clarity in real time','Give decision-makers a more current view of business performance.',Zap],['Built with security in mind','Support controlled access and accountable workflows.',LockKeyhole],['Ready to grow with you','Connect more processes as your organisation evolves.',Globe2]]
