@@ -19,9 +19,9 @@ const modules = [
   {n:'08',name:'Compliance',desc:'Support accountable operations with audit trails and role-based permissions.',icon:ShieldCheck,tag:'Governance',color:'violet'}
 ]
 const industries = [
-  {name:'Education',desc:'Connect admissions, fees, faculty and academic administration.',icon:GraduationCap,number:'01'},
-  {name:'Startups',desc:'Build a connected operational foundation that can grow with your team.',icon:Rocket,number:'02'},
-  {name:'Retail & E-commerce',desc:'Coordinate multichannel inventory, point of sale and customer relationships.',icon:ShoppingBag,number:'03'}
+  {name:'Education',desc:'Connect admissions, fees, faculty and academic administration.',icon:GraduationCap,number:'01',theme:'edu',tags:['Admissions','Fees','Faculty']},
+  {name:'Startups',desc:'Build a connected operational foundation that can grow with your team.',icon:Rocket,number:'02',theme:'startup',tags:['Hiring','Billing','Growth']},
+  {name:'Retail & E-commerce',desc:'Coordinate multichannel inventory, point of sale and customer relationships.',icon:ShoppingBag,number:'03',theme:'retail',tags:['Point of sale','Stock','Customers']}
 ]
 const heroKeywordTags = [
  {label:'Finance',icon:Wallet,position:'keyword-finance'},
@@ -149,8 +149,24 @@ function Modules(){
  <TiltCard className="module-feature-stage" max={6}><AnimatePresence mode="wait" initial={false}><motion.div className={`module-feature ${modules[active].color}`} key={active} style={{transformPerspective:1200}} initial={{opacity:0,rotateY:38,x:40,scale:.94,filter:'blur(8px)'}} animate={{opacity:1,rotateY:0,x:0,scale:1,filter:'blur(0px)',transition:{duration:.55,ease}}} exit={{opacity:0,rotateY:-30,x:-30,scale:.96,filter:'blur(6px)',transition:{duration:.2,ease:easeIn}}}><div className="feature-particles" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/></div><motion.div className={`feature-orb ${modules[active].color}`} initial={{rotateY:-180,scale:.5,opacity:0}} animate={{rotateY:0,scale:1,opacity:1}} transition={{type:'spring',stiffness:160,damping:14,delay:.05}} style={{transformPerspective:600}}>{React.createElement(modules[active].icon,{size:43,strokeWidth:1.4})}</motion.div><span className="feature-number">MODULE / {modules[active].n}</span><h3 className="feature-title" aria-label={modules[active].name}>{modules[active].name.split('').map((c,k)=><motion.span key={k} aria-hidden="true" initial={{opacity:0,y:'0.6em',rotateX:-90}} animate={{opacity:1,y:0,rotateX:0}} transition={{delay:.12+k*.028,duration:.5,ease}} style={{display:'inline-block',whiteSpace:'pre',transformOrigin:'50% 100%'}}>{c}</motion.span>)}</h3><p>{modules[active].desc}</p><button type="button" className="text-link" onClick={()=>openWorkspace(active)}>Open interactive workspace <ArrowUpRight size={16}/></button><div className="feature-lines" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/></div></motion.div></AnimatePresence><ClientModuleScene index={active} paused={workspaceOpen}/></TiltCard></div>
  </div><AnimatePresence>{workspaceOpen&&<ModuleWorkspace modules={modules} moduleIndex={active} onSelect={setActive} onClose={closeWorkspace}/>}</AnimatePresence></section>
 }
+const tagParent=(d)=>({hidden:{},show:{transition:{staggerChildren:.08,delayChildren:.45+d}}})
+const tagChild={hidden:{opacity:0,y:10,scale:.9},show:{opacity:1,y:0,scale:1,transition:{duration:.5,ease}}}
+function IndustryCard({x,i}){
+ const I=x.icon
+ const onMove=e=>{const r=e.currentTarget.getBoundingClientRect();e.currentTarget.style.setProperty('--mx',`${e.clientX-r.left}px`);e.currentTarget.style.setProperty('--my',`${e.clientY-r.top}px`)}
+ return <Reveal delay={i*.12}><TiltCard max={9}><a className={`industry-card ind-${x.theme}`} href="#contact" onPointerMove={onMove}>
+  <span className="industry-border" aria-hidden="true"/>
+  <span className="industry-spot" aria-hidden="true"/>
+  <span className="industry-num" aria-hidden="true">{x.number}</span>
+  <div className="industry-top"><span>{x.number} / INDUSTRY</span><span className="industry-arrow"><ArrowUpRight size={16}/></span></div>
+  <motion.div className="industry-icon" animate={{y:[0,-7,0]}} transition={{duration:4.5,repeat:Infinity,ease:'easeInOut',delay:i*.7}}><span className="industry-ring" aria-hidden="true"/><I size={27}/></motion.div>
+  <h3>{x.name}</h3><p>{x.desc}</p>
+  <motion.ul className="industry-tags" variants={tagParent(i*.12)} initial="hidden" whileInView="show" viewport={{once:true,amount:.4}}>{x.tags.map(t=><motion.li key={t} variants={tagChild}>{t}</motion.li>)}</motion.ul>
+  <span className="industry-link">Explore solution <ArrowRight size={15}/></span>
+ </a></TiltCard></Reveal>
+}
 function Industries(){
- return <section className="section industries-section" id="industries"><ScrollStage className="container"><div className="industry-head"><SectionHeading eyebrow="BUILT FOR YOUR WORLD" title={<>Flexible by design.<br/><span className="gradient-text">Ready for your industry.</span></>} copy="Different industries. Different challenges. One connected platform that adapts to the way your organisation works."/><a href="#contact" className="text-link">Find your solution <ArrowRight size={16}/></a></div><div className="industry-grid">{industries.map((x,i)=>{const I=x.icon;return <Reveal key={x.name} delay={i*.08}><TiltCard max={9}><a className="industry-card" href="#contact"><div className="industry-top"><span>{x.number} / INDUSTRY</span><ArrowUpRight size={18}/></div><div className="industry-icon"><I size={29}/></div><h3>{x.name}</h3><p>{x.desc}</p><span className="industry-link">Explore solution <ArrowRight size={15}/></span><div className="industry-glow"/></a></TiltCard></Reveal>})}</div></ScrollStage></section>
+ return <section className="section industries-section" id="industries"><div className="ind-backdrop" aria-hidden="true"><span className="ind-blob ind-blob-a"/><span className="ind-blob ind-blob-b"/><span className="ind-blob ind-blob-c"/><span className="ind-gridlines"/></div><ScrollStage className="container"><div className="industry-head"><SectionHeading eyebrow="BUILT FOR YOUR WORLD" title={<>Flexible by design.<br/><span className="gradient-text">Ready for your industry.</span></>} copy="Different industries. Different challenges. One connected platform that adapts to the way your organisation works."/><a href="#contact" className="text-link">Find your solution <ArrowRight size={16}/></a></div><div className="industry-grid">{industries.map((x,i)=><IndustryCard key={x.name} x={x} i={i}/>)}</div></ScrollStage></section>
 }
 function Why(){
  const items=[['One connected source','Reduce silos with shared data across teams and departments.',Layers3],['Clarity in real time','Give decision-makers a more current view of business performance.',Zap],['Built with security in mind','Support controlled access and accountable workflows.',LockKeyhole],['Ready to grow with you','Connect more processes as your organisation evolves.',Globe2]]

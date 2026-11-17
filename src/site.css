@@ -894,3 +894,75 @@ button.text-link:hover{color:#d36d59}
 html,body{overflow-x:clip}
 /* Narrower screens: drop the "AI insight" notice below the chart so it no longer covers the bars. */
 @media(max-width:1000px){.float-two{bottom:-26px}}
+
+/* ===== Industries: "midnight aurora" theme ===== */
+@property --ind-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+.industries-section{
+  --ind-bg:#0d0915;--ind-text:#fff6ee;--ind-muted:#b6a8c4;--ind-line:rgba(255,240,230,.09);
+  --ind-peach:#ffb86b;--ind-coral:#ff7a59;--ind-pink:#ff7ab8;--ind-violet:#9b6cff;--ind-mint:#5ef0c4;--ind-sky:#3aa7ff;
+  position:relative;overflow:hidden;isolation:isolate;background:var(--ind-bg);color:var(--ind-text);
+  border-top:1px solid var(--ind-line);border-bottom:1px solid var(--ind-line)
+}
+.industries-section>.container{position:relative;z-index:1}
+.ind-backdrop{position:absolute;inset:0;z-index:0;pointer-events:none}
+.ind-blob{position:absolute;width:560px;height:560px;border-radius:50%;filter:blur(110px);opacity:.38;mix-blend-mode:screen;will-change:transform}
+.ind-blob-a{background:var(--ind-coral);left:-12%;top:-8%;animation:ind-drift-a 19s ease-in-out infinite alternate}
+.ind-blob-b{background:var(--ind-violet);right:-10%;top:22%;animation:ind-drift-b 23s ease-in-out infinite alternate}
+.ind-blob-c{background:var(--ind-mint);left:32%;bottom:-38%;opacity:.26;animation:ind-drift-c 27s ease-in-out infinite alternate}
+.ind-gridlines{position:absolute;inset:0;background-image:linear-gradient(var(--ind-line) 1px,transparent 1px),linear-gradient(90deg,var(--ind-line) 1px,transparent 1px);background-size:68px 68px;mask-image:radial-gradient(ellipse 75% 65% at 50% 45%,#000 20%,transparent 75%);opacity:.55;animation:ind-grid-pan 14s linear infinite}
+@keyframes ind-drift-a{to{transform:translate(18%,22%) scale(1.15)}}
+@keyframes ind-drift-b{to{transform:translate(-22%,-14%) scale(.9)}}
+@keyframes ind-drift-c{to{transform:translate(-18%,-20%) scale(1.2)}}
+@keyframes ind-grid-pan{to{background-position:68px 68px,68px 68px}}
+
+.industries-section .section-heading h2{color:var(--ind-text)}
+.industries-section .section-heading p{color:var(--ind-muted)}
+.industries-section .eyebrow{color:#d8b8f2}
+.industries-section .eyebrow-dot{background:var(--ind-peach);box-shadow:0 0 12px var(--ind-peach)}
+.industries-section .text-link{color:var(--ind-peach)}
+.industries-section .text-link:hover{color:var(--ind-text)}
+.industries-section .gradient-text{background:linear-gradient(100deg,var(--ind-peach),var(--ind-pink) 28%,var(--ind-violet) 52%,var(--ind-mint) 78%,var(--ind-peach));background-size:220% auto;background-clip:text;-webkit-background-clip:text;color:transparent;animation:ind-shimmer 7s linear infinite}
+@keyframes ind-shimmer{to{background-position:220% center}}
+
+.industry-card.ind-edu{--ind:var(--ind-peach);--ind-2:var(--ind-coral)}
+.industry-card.ind-startup{--ind:var(--ind-pink);--ind-2:var(--ind-violet)}
+.industry-card.ind-retail{--ind:var(--ind-mint);--ind-2:var(--ind-sky)}
+.industries-section .industry-card{
+  min-height:390px;padding:28px;border-radius:22px;border:1px solid var(--ind-line);color:var(--ind-text);
+  background:linear-gradient(165deg,rgba(255,255,255,.075),rgba(255,255,255,.015) 55%),rgba(20,14,30,.55);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 24px 60px -30px rgba(0,0,0,.7);
+  transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s,border-color .45s
+}
+.industries-section .industry-card:hover{transform:translateY(-10px);border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 40px 80px -30px color-mix(in oklab,var(--ind) 45%,transparent)}
+.industry-border{position:absolute;inset:0;border-radius:inherit;padding:1.2px;pointer-events:none;
+  background:conic-gradient(from var(--ind-angle),transparent 0 55%,var(--ind) 72%,var(--ind-2) 86%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  opacity:.35;animation:ind-spin 7s linear infinite;transition:opacity .45s}
+.industry-card:hover .industry-border{opacity:1;animation-duration:3s}
+@keyframes ind-spin{to{--ind-angle:360deg}}
+.industry-spot{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:radial-gradient(280px circle at var(--mx,50%) var(--my,50%),color-mix(in oklab,var(--ind) 24%,transparent),transparent 70%)}
+.industry-card:hover .industry-spot{opacity:1}
+.industry-num{position:absolute;right:-6px;bottom:52px;font:800 168px/1 Manrope,sans-serif;letter-spacing:-10px;color:transparent;-webkit-text-stroke:1px rgba(255,240,230,.07);pointer-events:none;transition:transform .7s cubic-bezier(.16,1,.3,1),-webkit-text-stroke-color .5s}
+.industry-card:hover .industry-num{transform:translate(-14px,-10px) scale(1.06);-webkit-text-stroke-color:color-mix(in oklab,var(--ind) 45%,transparent)}
+.industries-section .industry-top{position:relative;color:var(--ind-muted);font:10px 'DM Mono',monospace;letter-spacing:1.4px;align-items:center}
+.industry-arrow{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--ind-line);color:var(--ind);transition:transform .45s cubic-bezier(.16,1,.3,1),background .35s,color .35s}
+.industry-card:hover .industry-arrow{transform:rotate(45deg);background:var(--ind);color:var(--ind-bg);border-color:transparent}
+.industries-section .industry-icon{position:relative;width:58px;height:58px;border-radius:18px;margin:38px 0 22px;color:var(--ind);
+  background:radial-gradient(circle at 30% 25%,color-mix(in oklab,var(--ind) 32%,transparent),color-mix(in oklab,var(--ind-2) 10%,transparent));
+  border:1px solid color-mix(in oklab,var(--ind) 35%,transparent);box-shadow:0 10px 30px -8px color-mix(in oklab,var(--ind) 55%,transparent)}
+.industry-ring{position:absolute;inset:-9px;border-radius:50%;border:1px dashed color-mix(in oklab,var(--ind) 45%,transparent);animation:ind-ring 16s linear infinite}
+@keyframes ind-ring{to{transform:rotate(360deg)}}
+.industries-section .industry-card h3{position:relative;font:700 23px Manrope,sans-serif;letter-spacing:-.6px;color:var(--ind-text);margin:0 0 9px}
+.industries-section .industry-card p{position:relative;color:var(--ind-muted);font-size:13px;line-height:1.7;max-width:280px}
+.industry-tags{position:relative;display:flex;flex-wrap:wrap;gap:7px;list-style:none;margin:18px 0 0;padding:0}
+.industry-tags li{padding:5px 11px;border-radius:999px;font:10px 'DM Mono',monospace;letter-spacing:.6px;color:color-mix(in oklab,var(--ind) 75%,white);background:color-mix(in oklab,var(--ind) 9%,transparent);border:1px solid color-mix(in oklab,var(--ind) 30%,transparent)}
+.industries-section .industry-link{color:var(--ind);font-size:12px;bottom:26px;left:28px}
+.industries-section .industry-link svg{transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.industry-card:hover .industry-link svg{transform:translateX(6px)}
+.industries-section .industry-grid{gap:20px}
+@media(max-width:760px){.industries-section .industry-card{min-height:350px}.industry-num{font-size:130px}.ind-blob{width:380px;height:380px}}
+@media(prefers-reduced-motion:reduce){.industries-section *,.industries-section .gradient-text{animation:none!important}}
+.industries-section .industry-top svg{color:inherit}
+.industries-section .industry-num{bottom:18px}
