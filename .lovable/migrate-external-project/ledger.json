@@ -1,0 +1,14 @@
+{
+  "source": "github:hegdenihal9740-stack/runner-performance-dashboard",
+  "summary": "Static TanStack Start site (The Manager). No database, auth, storage, payments, email, schedules or server code detected.",
+  "capabilities": [
+    {"capability": "code", "source": "src/components/site, src/routes", "outcome": "migrate", "status": "verified", "next_action": "none"},
+    {"capability": "styles", "source": "src/site.css, src/workspace.css", "outcome": "migrate", "status": "verified", "next_action": "none"},
+    {"capability": "3d scenes", "source": "OrbitalScene.tsx, ModuleScenes.tsx", "outcome": "migrate", "status": "verified", "next_action": "none"},
+    {"capability": "schema/records", "source": "none", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "auth", "source": "none", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "contact form backend", "source": "client-only demo state", "outcome": "preserve_as_is", "status": "verified", "next_action": "Optional: save enquiries with Lovable Cloud"},
+    {"capability": "secrets", "source": "none", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "verification", "source": "-", "outcome": "verify", "status": "verified", "next_action": "none"}
+  ]
+}
