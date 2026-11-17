@@ -11,7 +11,8 @@ const nodes = [
   ["Finance", Wallet], ["Logistics", Truck], ["Documents", FileText], ["Compliance", ShieldCheck],
 ];
 const word = "themanager".split("");
-const MIN_MS = 2600;
+const MIN_MS = 1500;
+const MAX_WAIT_MS = 2200; // never hold the visitor longer than this
 
 /** Full-screen intro: modules connect one by one while the page loads, then a curtain opens onto the site. */
 export default function IntroLoader({ onDone }) {
@@ -22,9 +23,12 @@ export default function IntroLoader({ onDone }) {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const markLoaded = () => { loaded.current = true; };
-    if (document.readyState === "complete") markLoaded(); else window.addEventListener("load", markLoaded, { once: true });
-    const total = reduced ? 500 : MIN_MS;
+    // the page is usable once the HTML is parsed; don't wait for every image or 3D scene
+    if (document.readyState !== "loading") markLoaded(); else document.addEventListener("DOMContentLoaded", markLoaded, { once: true });
+    const cap = setTimeout(markLoaded, MAX_WAIT_MS);
+    // time the page already spent loading counts toward the minimum, with a short floor so the animation still plays
     const start = performance.now();
+    const total = reduced ? 400 : Math.max(800, MIN_MS - start);
     let raf, shown = 0, timer;
     const tick = now => {
       const t = Math.max(0, Math.min(1, (now - start) / total));
@@ -32,21 +36,21 @@ export default function IntroLoader({ onDone }) {
       let target = Math.round((1 - Math.pow(1 - t, 2.4)) * 100);
       if (!loaded.current) target = Math.min(target, 92);
       if (target !== shown) { shown = target; setPct(target); }
-      if (shown >= 100) { setPhase("ready"); timer = setTimeout(onDone, reduced ? 100 : 650); return; }
+      if (shown >= 100) { setPhase("ready"); timer = setTimeout(onDone, reduced ? 100 : 250); return; }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(raf); clearTimeout(timer); window.removeEventListener("load", markLoaded); };
+    return () => { cancelAnimationFrame(raf); clearTimeout(timer); clearTimeout(cap); document.removeEventListener("DOMContentLoaded", markLoaded); };
   }, [onDone]);
 
   const active = Math.max(0, Math.min(nodes.length - 1, Math.floor(pct / (100 / nodes.length))));
   const ready = phase === "ready";
 
   return (
-    <motion.div className="il-root" role="status" aria-live="polite" aria-label={`Loading The Manager, ${pct}%`} exit={{ opacity: 1, transition: { duration: 1.1 } }}>
+    <motion.div className="il-root" role="status" aria-live="polite" aria-label="Loading The Manager" exit={{ opacity: 1, transition: { duration: 0.7 } }}>
       {/* curtain halves split open on exit */}
-      <motion.div className="il-curtain il-top" exit={{ y: "-100%", transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1], delay: 0.15 } }} />
-      <motion.div className="il-curtain il-bottom" exit={{ y: "100%", transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1], delay: 0.15 } }} />
+      <motion.div className="il-curtain il-top" exit={{ y: "-100%", transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1], delay: 0.05 } }} />
+      <motion.div className="il-curtain il-bottom" exit={{ y: "100%", transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1], delay: 0.05 } }} />
       <motion.div className="il-seam" initial={{ scaleX: 0 }} animate={{ scaleX: ready ? 1 : 0 }} exit={{ opacity: 0, transition: { duration: 0.3, delay: 0.2 } }} transition={{ duration: 0.5, ease }} />
 
       <motion.div className="il-stage" exit={{ opacity: 0, scale: 0.92, filter: "blur(10px)", transition: { duration: 0.35 } }}>
@@ -80,11 +84,7 @@ export default function IntroLoader({ onDone }) {
           <motion.div className="il-core" initial={{ scale: 0, rotate: -45 }} animate={{ scale: ready ? 1.18 : 1, rotate: 0 }} transition={{ type: "spring", stiffness: 140, damping: 13, delay: 0.05 }}>
             <span className="il-core-ring" />
             <span className="il-core-ring il-core-ring-2" />
-            <AnimatePresence mode="wait" initial={false}>
-              {ready
-                ? <motion.b key="m" className="il-mark" initial={{ scale: 0.3, opacity: 0, rotateY: -180 }} animate={{ scale: 1, opacity: 1, rotateY: 0 }} transition={{ duration: 0.5, ease }}>M</motion.b>
-                : <motion.span key="pct" className="il-pct" exit={{ scale: 0.4, opacity: 0, transition: { duration: 0.15 } }}>{String(pct).padStart(2, "0")}<small>%</small></motion.span>}
-            </AnimatePresence>
+            <motion.b className="il-mark" animate={ready ? { rotateY: 360, scale: 1.08 } : { rotateY: 0, scale: 1 }} transition={{ duration: 0.5, ease }}>M</motion.b>
           </motion.div>
           {ready && <motion.span className="il-burst" initial={{ scale: 0.2, opacity: 0.9 }} animate={{ scale: 3.2, opacity: 0 }} transition={{ duration: 0.8, ease }} />}
         </div>
