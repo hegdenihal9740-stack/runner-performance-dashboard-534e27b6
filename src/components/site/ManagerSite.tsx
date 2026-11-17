@@ -6,6 +6,7 @@ const OrbitalScene = React.lazy(() => import('./OrbitalScene'))
 const ModuleScene = React.lazy(() => import('./ModuleScenes'))
 import ModuleWorkspace from './ModuleWorkspace'
 import IndustryWorkspace from './IndustryWorkspace'
+import IntroLoader from './IntroLoader'
 function ClientModuleScene({index,paused}){const ref=React.useRef(null);const inView=useInView(ref,{margin:'120px'});const [mounted,setMounted]=useState(false);React.useEffect(()=>setMounted(true),[]);return <div ref={ref} className="mf-scene" aria-hidden="true">{mounted&&<React.Suspense fallback={null}><ModuleScene index={index} paused={paused||!inView} sparkles={false} distance={5.8} className="mf-canvas"/></React.Suspense>}</div>}
 function ClientOrbitalScene(){const [mounted,setMounted]=useState(false);React.useEffect(()=>setMounted(true),[]);if(!mounted)return <div className="orbital-canvas"/>;return <React.Suspense fallback={<div className="orbital-canvas"/>}><OrbitalScene/></React.Suspense>}
 
@@ -199,36 +200,10 @@ function Contact(){
 function Footer(){
  return <footer className="footer"><div className="container"><div className="footer-top"><div className="footer-brand"><Logo/><p>Redefining the architecture of enterprise management. Precision, scale and intelligence in one unified platform.</p><div className="socials"><a href="#contact" aria-label="LinkedIn"><Linkedin/></a><a href="#contact" aria-label="X"><Twitter/></a><a href="#contact" aria-label="GitHub"><Github/></a></div></div><div className="footer-col"><b>PLATFORM</b><a href="#modules">Modules</a><a href="#platform">Features</a><a href="#industries">Solutions</a><a href="#contact">Book a demo</a></div><div className="footer-col"><b>COMPANY</b><a href="#company">About</a><a href="#resources">Insights</a><a href="#contact">Careers</a><a href="#contact">Contact</a></div><div className="footer-col"><b>RESOURCES</b><a href="#resources">Guides</a><a href="#resources">Documentation</a><a href="#contact">API enquiries</a><a href="#contact">Support</a></div><div className="footer-col"><b>LEGAL</b><a href="#contact">Privacy</a><a href="#contact">Terms</a><a href="#contact">Security</a><a href="#contact">Cookies</a></div></div><div className="footer-bottom"><span>© 2026 The Manager. All rights reserved.</span><span>Designed for connected work <span className="footer-star">✳</span></span></div></div></footer>
 }
-function IntroLoader(){
- return <motion.div className="intro-screen" role="status" aria-label="Loading The Manager" exit={{opacity:0,scale:.985,transition:{duration:.45,ease:'easeInOut'}}}>
- <div className="intro-grid" aria-hidden="true"/>
- <div className="intro-content">
-  <div className="intro-visual" aria-hidden="true">
-   <div className="intro-visual-glow"/>
-   <div className="intro-orbit intro-orbit-one"><i/></div>
-   <div className="intro-orbit intro-orbit-two"><i/></div>
-   <div className="intro-orbit intro-orbit-three"><i/></div>
-   <span className="intro-mark"><b>M</b><i/><span/></span>
-   <span className="intro-spark intro-spark-one"/>
-   <span className="intro-spark intro-spark-two"/>
-  </div>
-  <div className="intro-brand-name"><span className="intro-wordmark">the<span>manager</span></span><small>BUSINESS OPERATING SYSTEM</small></div>
-  <p className="intro-tagline">One workspace. Everything in sync.</p>
-  <div className="intro-loading-meta"><span className="intro-status"><i/> Connecting your business</span></div>
-  <div className="intro-progress"><i/></div>
- </div>
- <div className="intro-orb intro-orb-one" aria-hidden="true"/>
- <div className="intro-orb intro-orb-two" aria-hidden="true"/>
- </motion.div>
-}
 export default function ManagerSite(){
  const [introVisible,setIntroVisible]=useState(true)
  const {scrollYProgress}=useScroll()
  const progress=useSpring(scrollYProgress,{stiffness:140,damping:28,mass:.3})
- React.useEffect(()=>{
- const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches
- const timer=window.setTimeout(()=>setIntroVisible(false),reducedMotion?650:2750)
- return ()=>window.clearTimeout(timer)
- },[])
- return <MotionConfig reducedMotion="user"><motion.div className="scroll-progress" style={{scaleX:progress}} aria-hidden="true"/><AnimatePresence>{introVisible&&<IntroLoader key="intro"/>}</AnimatePresence><Header/><main><Hero/><Ticker/><Platform/><Modules/><Industries/><Why/><Process/><Trust/><Resources/><FAQ/><Contact/></main><Footer/><a href="#home" className="back-top" aria-label="Back to top">↑</a></MotionConfig>
+ const hideIntro=React.useCallback(()=>setIntroVisible(false),[])
+ return <MotionConfig reducedMotion="user"><motion.div className="scroll-progress" style={{scaleX:progress}} aria-hidden="true"/><AnimatePresence>{introVisible&&<IntroLoader key="intro" onDone={hideIntro}/>}</AnimatePresence><Header/><main><Hero/><Ticker/><Platform/><Modules/><Industries/><Why/><Process/><Trust/><Resources/><FAQ/><Contact/></main><Footer/><a href="#home" className="back-top" aria-label="Back to top">↑</a></MotionConfig>
 }
